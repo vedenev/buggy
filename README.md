@@ -1,4 +1,4 @@
-##BUGGY  
+## BUGGY  
 It is buggy that works like this:  
 https://www.youtube.com/watch?v=sZwu3c4jivI  
 It is raw codes. The codes is numbered like t001 or tt001. It is order number in time. t001 are codes developed desktop. tt001 are codes that developed on raspbery pi.  
