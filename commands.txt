@@ -1,0 +1,133 @@
+URL used to install ROS melodic:
+https://wiki.ros.org/ROSberryPi/Installing%20ROS%20Melodic%20on%20the%20Raspberry%20Pi
+
+command to run ROS:
+source /opt/ros/melodic/setup.bash
+
+command to run core:
+roscore
+
+check enviroment variables after run ROS:
+printenv | grep ROS
+
+
+2020-27-04 error:
+pi@raspberrypi:~/ros_catkin_ws $ rosdep install --from-paths src --ignore-src --rosdistro=melodic -y
+ERROR: the following packages/stacks could not have their rosdep keys resolved
+to system dependencies:
+camera_info_manager: No definition of [sensor_msgs] for OS version [buster]
+polled_camera: No definition of [sensor_msgs] for OS version [buster]
+image_transport: No definition of [sensor_msgs] for OS version [buster]
+raspicam_node: No definition of [diagnostic_updater] for OS version [buster]
+camera_calibration_parsers: No definition of [sensor_msgs] for OS version [buster]
+
+https://venelinpetkov.com/2017/11/19/how-to-install-a-raspberry-camera-node-on-ros-kinetic-raspbian-stretch/
+
+rosinstall_generator compressed_image_transport --rosdistro melodic --deps --wet-only --tar > melodic-compressed_image_transport-wet.rosinstall
+rosinstall_generator camera_info_manager --rosdistro melodic --deps --wet-only --tar > melodic-camera_info_manager-wet.rosinstall
+rosinstall_generator dynamic_reconfigure --rosdistro melodic --deps --wet-only --tar > melodic-dynamic_reconfigure-wet.rosinstall
+rosinstall_generator diagnostics --rosdistro melodic --deps --wet-only --tar > melodic-diagnostics-wet.rosinstall
+
+wstool merge -t src melodic-compressed_image_transport-wet.rosinstall
+wstool merge -t src melodic-camera_info_manager-wet.rosinstall
+wstool merge -t src melodic-dynamic_reconfigure-wet.rosinstall
+wstool merge -t src melodic-diagnostics-wet.rosinstall
+
+important command:
+source ~/ros_catkin_ws/devel/setup.sh
+
+how to run camera:
+source /opt/ros/melodic/setup.bash
+source ~/ros_catkin_ws/devel/setup.sh
+roslaunch raspicam_node camerav2_1280x960.launch
+
+rosinstall_generator rqt_image_view --rosdistro melodic --deps --wet-only --tar > melodic-rqt_image_view-wet.rosinstall
+wstool merge -t src melodic-rqt_image_view-wet.rosinstall
+wstool update -t src
+rosdep install --from-paths src --ignore-src --rosdistro melodic -y
+catkin_make
+
+how to run rqt_image_view:
+source /opt/ros/melodic/setup.bash
+source ~/ros_catkin_ws/devel/setup.sh
+rqt_image_view
+
+rosinstall_generator image_view --rosdistro melodic --deps --wet-only --tar > melodic-image_view-wet.rosinstall
+wstool merge -t src melodic-image_view-wet.rosinstall
+wstool update -t src
+rosdep install --from-paths src --ignore-src --rosdistro melodic -y
+catkin_make
+
+rosrun image_view image_saver image:=/raspicam_node/image _image_transport:=compressed
+
+rostopic list
+
+pip3 install numpy dlib
+
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \
+    -D ENABLE_NEON=ON \
+    -D ENABLE_VFPV3=ON \
+    -D BUILD_TESTS=OFF \
+    -D INSTALL_PYTHON_EXAMPLES=OFF \
+    -D OPENCV_ENABLE_NONFREE=ON \
+    -D CMAKE_SHARED_LINKER_FLAGS=-latomic \
+    -D BUILD_EXAMPLES=OFF .. \
+    -D WITH_PROTOBUF=OFF \
+    -D WITH_CUDA=OFF
+
+
+variant 1)
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \
+    -D ENABLE_NEON=ON \
+    -D ENABLE_VFPV3=ON \
+    -D BUILD_TESTS=OFF \
+    -D INSTALL_PYTHON_EXAMPLES=OFF \
+    -D OPENCV_ENABLE_NONFREE=ON \
+    -D CMAKE_SHARED_LINKER_FLAGS=-latomic \
+    -D BUILD_EXAMPLES=OFF ..
+
+variant 2)
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+            -D CMAKE_INSTALL_PREFIX=$cwd/installation/OpenCV-"$cvVersion" \
+            -D INSTALL_C_EXAMPLES=ON \
+            -D INSTALL_PYTHON_EXAMPLES=ON \
+            -D WITH_TBB=ON \
+            -D WITH_V4L=ON \
+            -D OPENCV_PYTHON3_INSTALL_PATH=$cwd/OpenCV-$cvVersion-py3/lib/python3.5/site-packages \
+        -D WITH_QT=ON \
+        -D WITH_OPENGL=ON \
+        -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
+        -D BUILD_EXAMPLES=ON ..
+
+variant combined)
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \
+    -D WITH_TBB=ON \
+    -D WITH_V4L=ON \
+    -D WITH_QT=ON \
+    -D WITH_OPENGL=ON \
+    -D ENABLE_NEON=ON \
+    -D ENABLE_VFPV3=ON \
+    -D BUILD_TESTS=OFF \
+    -D INSTALL_PYTHON_EXAMPLES=OFF \
+    -D OPENCV_ENABLE_NONFREE=ON \
+    -D CMAKE_SHARED_LINKER_FLAGS=-latomic \
+    -D BUILD_EXAMPLES=ON ..
+
+
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \
+    -D ENABLE_NEON=ON \
+    -D ENABLE_VFPV3=ON \
+    -D BUILD_TESTS=OFF \
+    -D INSTALL_PYTHON_EXAMPLES=OFF \
+    -D OPENCV_ENABLE_NONFREE=ON \
+    -D CMAKE_SHARED_LINKER_FLAGS=-latomic \
+    -D ENABLE_PRECOMPILED_HEADERS=OFF \
+    -D BUILD_EXAMPLES=OFF ..
